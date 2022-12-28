@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Head from "next/head";
 import { sanityClient } from "../lib/sanity";
 
@@ -6,6 +7,22 @@ interface PageProps {
 }
 
 export default function Home({ categories }: PageProps) {
+    const [email, setEmail] = useState("");
+
+    const handleClick = () => {
+        if (email) {
+            fetch("api/addUser", {
+                method: "POST",
+                body: JSON.stringify({
+                    email,
+                }),
+            })
+                .then((req) => req.json())
+                .then(() => setEmail(""))
+                .catch((err) => console.error(err));
+        }
+    };
+
     return (
         <>
             <Head>
@@ -21,6 +38,14 @@ export default function Home({ categories }: PageProps) {
                             <p key={cat._id}>{cat.name}</p>
                         ))}
                     </div>
+
+                    <input
+                        type="text"
+                        value={email}
+                        onChange={(e) => setEmail(e.currentTarget.value)}
+                    />
+
+                    <button onClick={handleClick}>Send Request</button>
                 </div>
             </main>
         </>
